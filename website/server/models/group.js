@@ -478,7 +478,7 @@ export function chatDefaults (msg, user) {
   const message = {
     id,
     _id: id,
-    text: msg,
+    text: msg.substring(0, 3000),
     timestamp: Number(new Date()),
     likes: {},
     flags: {},
@@ -913,22 +913,6 @@ schema.methods.finishQuest = async function finishQuest (quest) {
     'lostMasterclasser4',
   ];
 
-  if (masterClasserQuests.includes(questK)) {
-    let lostMasterclasserQuery = {
-      'achievements.lostMasterclasser': {$ne: true},
-    };
-    masterClasserQuests.forEach(questName => {
-      lostMasterclasserQuery[`achievements.quests.${questName}`] = {$gt: 0};
-    });
-    let lostMasterclasserUpdate = {
-      $set: {'achievements.lostMasterclasser': true},
-    };
-
-    promises = promises.concat(participants.map(userId => {
-      return _updateUserWithRetries(userId, lostMasterclasserUpdate, null, lostMasterclasserQuery);
-    }));
-  }
-
   // Send webhooks in background
   // @TODO move the find users part to a worker as well, not just the http request
   User.find({
@@ -954,7 +938,24 @@ schema.methods.finishQuest = async function finishQuest (quest) {
       });
     });
 
-  return await Promise.all(promises);
+  await Promise.all(promises);
+
+  if (masterClasserQuests.includes(questK)) {
+    let lostMasterclasserQuery = {
+      'achievements.lostMasterclasser': {$ne: true},
+    };
+    masterClasserQuests.forEach(questName => {
+      lostMasterclasserQuery[`achievements.quests.${questName}`] = {$gt: 0};
+    });
+    let lostMasterclasserUpdate = {
+      $set: {'achievements.lostMasterclasser': true},
+    };
+
+    let lostMasterClasserPromises = participants.map(userId => {
+      return _updateUserWithRetries(userId, lostMasterclasserUpdate, null, lostMasterclasserQuery);
+    });
+    await Promise.all(lostMasterClasserPromises);
+  }
 };
 
 function _isOnQuest (user, progress, group) {
@@ -1090,6 +1091,8 @@ schema.methods._processCollectionQuest = async function processCollectionQuest (
 };
 
 schema.statics.processQuestProgress = async function processQuestProgress (user, progress) {
+  if (user.preferences.sleep) return;
+
   let group = await this.getGroup({user, groupId: 'party'});
 
   if (!_isOnQuest(user, progress, group)) return;
@@ -1100,7 +1103,7 @@ schema.statics.processQuestProgress = async function processQuestProgress (user,
 
   let questType = quest.boss ? 'Boss' : 'Collection';
 
-  await group[`_process${questType}Quest`]({
+  await group[`_process${questType}Quest`]({ // _processBossQuest, _processCollectionQuest
     user,
     progress,
     group,
@@ -1130,6 +1133,7 @@ process.nextTick(() => {
 // returns a promise
 schema.statics.tavernBoss = async function tavernBoss (user, progress) {
   if (!progress) return;
+  if (user.preferences.sleep) return;
 
   // hack: prevent crazy damage to world boss
   let dmg = Math.min(900, Math.abs(progress.up || 0));
@@ -1319,6 +1323,7 @@ schema.methods.updateTask = async function updateTask (taskToSync, options = {})
 
   updateCmd.$set['group.approval.required'] = taskToSync.group.approval.required;
   updateCmd.$set['group.assignedUsers'] = taskToSync.group.assignedUsers;
+  updateCmd.$set['group.sharedCompletion'] = taskToSync.group.sharedCompletion;
 
   let taskSchema = Tasks[taskToSync.type];
 
@@ -1414,6 +1419,7 @@ schema.methods.syncTask = async function groupSyncTask (taskToSync, user) {
 
   matchingTask.group.approval.required = taskToSync.group.approval.required;
   matchingTask.group.assignedUsers = taskToSync.group.assignedUsers;
+  matchingTask.group.sharedCompletion = taskToSync.group.sharedCompletion;
 
   //  sync checklist
   if (taskToSync.checklist) {

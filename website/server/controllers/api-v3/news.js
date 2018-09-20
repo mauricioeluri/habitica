@@ -3,7 +3,7 @@ import { authWithHeaders } from '../../middlewares/auth';
 let api = {};
 
 // @TODO export this const, cannot export it from here because only routes are exported from controllers
-const LAST_ANNOUNCEMENT_TITLE = 'LAST CHANCE FOR ALLURING ANGLERFISH SET AND AQUATIC AMIGOS QUEST BUNDLE; FEATURED WIKI ON GUILD CREATION';
+const LAST_ANNOUNCEMENT_TITLE = 'FALL FESTIVAL BEGINS! LIMITED EDITION FALL EQUIPMENT, SEASONAL SHOP OPENS, AND NPC OUTFITS!';
 const worldDmg = { // @TODO
   bailey: false,
 };
@@ -26,34 +26,25 @@ api.getNews = {
     res.status(200).send({
       html: `
       <div class="bailey">
-        <div class="media">
-          <div class="align-self-center mr-3 ${baileyClass}"></div>
+        <div class="media align-items-center">
+          <div class="mr-3 ${baileyClass}"></div>
           <div class="media-body">
             <h1 class="align-self-center">${res.t('newStuff')}</h1>
-            <h2>6/26/2018 - ${LAST_ANNOUNCEMENT_TITLE}</h2>
+            <h2>9/20/2018 - ${LAST_ANNOUNCEMENT_TITLE}</h2>
           </div>
         </div>
         <hr/>
-        <div class="media align-items-center">
-          <div class="media-body">
-            <h3>Last Chance for Alluring Anglerfish Set</h3>
-            <p>Reminder: this weekend is your last chance to <a href='/user/settings/subscription' target='_blank'>subscribe</a> and receive the Alluring Anglerfish Set! Subscribing also lets you buy Gems for Gold. The longer your subscription, the more Gems you get!</p>
-            <p>Thanks so much for your support! You help keep Habitica running.</p>
-            <div class="small mb-3">by Beffymaroo</div>
-          </div>
-          <div class="promo_mystery_201806"></div>
-        </div>
-        <div class="promo_bundle_aquaticAmigos center-block mb-3"></div>
-        <h3>Last Chance for Aquatic Amigos Pet Quest Bundle</h3>
-        <p>This is also the final weekend to buy the discounted Aquatic Amigos Pet Quest Bundle, featuring the Axolotl, Cuttlefish, and Octopus quests all for seven Gems! Be sure to check it out in the <a href='/shops/quests' target='_blank'>Quest Shop</a> before it floats away!</p>
-        <div class="media align-items-center">
-          <div class="media-body">
-            <h3>Blog Post: Guild Creation and Maintenance Tips</h3>
-            <p>This month's <a href='https://habitica.wordpress.com/2018/06/27/guild-creation-and-maintenance-tips/' target='_blank'>featured Wiki article</a> is about Guild Creation and Maintenance! We hope that it will help you as explore Habitica's social spaces. Be sure to check it out, and let us know what you think by reaching out on <a href='https://twitter.com/habitica' target='_blank'>Twitter</a>, <a href='http://blog.habitrpg.com' target='_blank'>Tumblr</a>, and <a href='https://facebook.com/habitica' target='_blank'>Facebook</a>.</p>
-            <div class="small mb-3">by shanaqui and the Wiki Wizards</div>
-          </div>
-          <div class="scene_tavern"></div>
-        </div>
+        <div class="promo_fall_festival_2018 center-block"></div>
+        <h3>Limited Edition Class Outfits!</h3>
+        <p>From now until October 31st, limited edition outfits are available in the Rewards column! Depending on your class, you can be a Minotaur Warrior, an Alter Ego Rogue, a Carnivorous Plant Healer, or a Candymancer Mage. You'd better get productive to earn enough gold before your time runs out...</p>
+        <div class="small mb-3">by AnnDeLune, Vikte, QuartzFox, Beffymaroo, and SabreCat</div>
+        <div class="promo_fall_festival_2017 center-block"></div>
+        <h3>Seasonal Shop Opens</h3>
+        <p>The <a href='/shops/seasonal' target='_blank'>Seasonal Shop</a> has opened! It's stocking autumnal Seasonal Edition goodies at the moment, including past fall outfits. Everything there will be available to purchase during the Fall Festival event each year, but it's only open until October 31st, so be sure to stock up now, or you'll have to wait a year to buy these items again!</p>
+        <div class="small mb-3">by AnnDeLune, ʂʈєƒąʃųƥągųʂ, Katy133, Lilith of Alfheim, Definitely not a villain, ShoGirlGeek. cataclysms, maxpendragon, Lemoness, Beffymaroo, and SabreCat</div>
+        <h3>NPC Outfits</h3>
+        <p>Everyone has hastened down to the Flourishing Fields to celebrate this spooky harvest festival. Be sure to check out all the new outfits that people are sporting!</p>
+        <div class="promo_seasonal_shop center-block"></div>
       </div>
       `,
     });
